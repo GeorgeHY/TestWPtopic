@@ -1,0 +1,375 @@
+//
+//  HotLeftViewController.m
+//  if_wapeng
+//
+//  Created by 心 猿 on 14-8-8.
+//  Copyright (c) 2014年 funeral. All rights reserved.
+//
+#define PARENT_USER          1 //家长用户
+#define TEACTER_USER         2 //教师用户
+#define OGANIZATION_USER     3 //机构用户
+
+#import "HotLeftViewController.h"
+#import "HotLeftTVCell.h"
+#import "HotLeftModel.h"
+#import "UIView+WhenTappedBlocks.h"
+#import "UIView+WhenTappedBlocks.h"
+#import "AnnouncementVC.h"
+#import "UIViewController+MMDrawerController.h"
+#import "HotTopicViewController.h"
+#import "AnnouncementAllVC.h"
+#import "UIColor+AddColor.h"
+#import "MyTalkVC.h"
+#import "AppDelegate.h"
+#import "MyDatumVC.h"
+#import "DataItem.h"
+@interface HotLeftViewController ()
+{
+    float nav_Y;
+    float nav_H;
+    float screenheight;
+    float screenwidth;
+    NSArray  *_allTopicTitle;
+    NSArray  * headerArray;
+    
+}
+@property (nonatomic, assign) NSInteger lastSelected;//记录
+@end
+
+@implementation HotLeftViewController
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        
+        
+    }
+    return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    _allTopicTitle = [NSArray array];
+    _allTopicTitle = @[@[@"分类话题",@"身边话题",@"熟人话题",@"同龄话题",@"今日十大"],@[@"我的话题"]];
+    self.view.backgroundColor = [UIColor blackColor];
+    NSMutableArray * array1 = [[NSMutableArray alloc]  initWithObjects:@"身边热点",@"熟人话题",@"同龄段话题",nil];
+    NSMutableArray * array2 = [[NSMutableArray alloc]  initWithObjects:@"今日十大", @"分类话题",@"我的话题",nil];
+    self.dateSource  = [[NSMutableArray alloc]  init];
+    for (int i = 0; i < 2; i++) {
+        if (i%2 == 0) {
+            HotLeftModel * hot = [[HotLeftModel alloc] init];
+            hot.array = array1;
+            hot.title = @"身边";
+            [self.dateSource  addObject:hot];
+        }else{
+            HotLeftModel * hot = [[HotLeftModel alloc] init];
+            hot.array = array2;
+            hot.title = @"全网";
+            [self.dateSource  addObject:hot];
+        }
+    }
+    [self createComponent];
+    
+}
+-(void) createComponent{
+    if (IOS7) {
+        self.navigationController.navigationBar.translucent = NO;
+        self.automaticallyAdjustsScrollViewInsets = YES;
+    }
+    
+    UIImageView * navView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kMainScreenWidth, 100)];
+    navView.backgroundColor = kRGB(52, 55, 67);
+    navView.userInteractionEnabled = YES;
+    UIButton * headButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    headButton.frame = CGRectMake(50, 25, 60, 60);
+    headButton.layer.masksToBounds = YES;
+    headButton.layer.cornerRadius = 8;
+    headButton.layer.borderWidth = 5;
+    headButton.layer.borderColor = [UIColor grayColor].CGColor;
+    
+    [headButton setImage:[UIImage imageNamed:@"saga2.jpg"] forState:UIControlStateNormal];
+    
+    [headButton addTarget:self action:@selector(headerButtonClick) forControlEvents:UIControlEventTouchUpInside];
+    [navView addSubview:headButton];
+    
+    UILabel * acitiLabel = [[UILabel alloc]initWithFrame:CGRectMake(120, headButton.frame.origin.y + 15, 100, 24)];
+    acitiLabel.text = @"话题";
+    acitiLabel.textColor = [UIColor whiteColor];
+    
+    [navView addSubview:acitiLabel];
+    
+    [self.view  addSubview:navView];
+    
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, kMainScreenWidth, kMainScreenHeight - CGRectGetMaxY(navView.frame))];
+    self.tableView.tableHeaderView = navView;
+    [self.view  addSubview:self.tableView];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.backgroundColor = kRGB(36, 40, 45);
+    self.view.backgroundColor = kRGB(36, 40, 45);
+}
+
+#pragma mark - 点击进入我的资料
+-(void)headerButtonClick{
+    NSUserDefaults * d = [NSUserDefaults standardUserDefaults];
+    NSString * ddid = [d objectForKey:UD_ddid];
+    
+    NSMutableDictionary * postDict = [[NSMutableDictionary alloc]initWithObjectsAndKeys:ddid , @"D_ID", nil];
+    
+    DataItem * item = [[DataItem alloc]init];
+    
+    __weak HotLeftViewController * weakSelf = self;
+    
+    AFN_HttpBase * http = [[AFN_HttpBase alloc]init];
+    
+    [http fiveReuqestUrl:dUrl_OSM_1_1_3 postDict:postDict succeed:^(NSObject *obj, BOOL isFinished) {
+        
+        NSDictionary * root = (NSDictionary *)obj;
+        
+        item.petName = [[root objectForKey:@"value"] objectForKey:@"petName"];
+        
+        
+        //先赋值
+        item.relativePath = @"";
+        if (![[root objectForKey:@"value"] isKindOfClass:[NSNull class]]) {
+            
+            if (![[[root objectForKey:@"value"] objectForKey:@"photo"] isKindOfClass:[NSNull class]]) {
+                
+                if (![[[[root objectForKey:@"value"] objectForKey:@"photo"] objectForKey:@"relativePath"] isKindOfClass:[NSNull class]]) {
+                    item.relativePath = [NSString stringWithFormat:@"%@%@", dUrl_PhotoPrefixion, [[[root objectForKey:@"value"] objectForKey:@"photo"] objectForKey:@"relativePath"]];
+                }
+            }
+        }
+        
+        item.userType = [[[[root objectForKey:@"value"] objectForKey:@"userType"] objectForKey:@"id"]intValue];
+        
+        
+        if (item.userType == PARENT_USER || item.userType == TEACTER_USER) {
+            
+            item.located = [[[root objectForKey:@"value"] objectForKey:@"userInfoExtension"] objectForKey:@"located"];
+            item.personnelSignature = [[[root objectForKey:@"value"] objectForKey:@"userInfoExtension"] objectForKey:@"personnelSignature"];
+            item.gender =[[[[root objectForKey:@"value"] objectForKey:@"userInfoExtension"] objectForKey:@"gender"]integerValue];
+            item.wpCode = [[root objectForKey:@"value"] objectForKey:@"wpCode"];
+            
+        }else{
+            
+            NSDictionary * value = [root objectForKey:@"value"];
+            
+            item.located = [[value objectForKey:@"organizationExtension"] objectForKey:@"bizAddress"];
+            item.wpCode = [[root objectForKey:@"value"] objectForKey:@"wpCode"];
+            item.personnelSignature =[[value objectForKey:@"organizationExtension"] objectForKey:@"description"];
+            
+            NSLog(@"%@", item.personnelSignature);
+        }
+        
+        
+        
+        
+        MyDatumVC * vc = [[MyDatumVC alloc]init];
+        vc.type = 1;
+        vc.item = item;
+        vc.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+        UINavigationController * nc = [[UINavigationController alloc]initWithRootViewController:vc];
+        nc.navigationBar.translucent = NO;
+        [weakSelf presentViewController:nc animated:YES completion:nil];
+        
+    } failed:^(NSObject *obj, BOOL isFinished) {
+        
+    }];
+
+    
+}
+
+#pragma mark  Scrollview
+//-(void)scrollViewDidScroll:(UIScrollView *)scrollView
+//{
+//    CGFloat sectionHeaderHeight = 50;
+//    if (scrollView.contentOffset.y<=sectionHeaderHeight&&scrollView.contentOffset.y>=0) {
+//        scrollView.contentInset = UIEdgeInsetsMake(-scrollView.contentOffset.y, 0, 0, 0);
+//    } else if (scrollView.contentOffset.y>=sectionHeaderHeight) {
+//        scrollView.contentInset = UIEdgeInsetsMake(-sectionHeaderHeight, 0, 0, 0);
+//
+//    }
+//}
+
+
+#pragma mark tableview
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 45 ;
+}
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    NSArray *arr = _allTopicTitle[section];
+    return  arr.count;
+    
+}
+
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return _allTopicTitle.count;
+}
+
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+//{
+//    if (section) {
+//        return 40;
+//    }else
+//        return 0;
+//}
+
+
+
+//-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+//    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kMainScreenWidth, 40)];
+//    view.backgroundColor = kRGB(36, 40, 45);
+//    UIImageView * imageView = [[UIImageView alloc]init];
+//    imageView.frame = CGRectMake(0, view.frame.size.height - 1, kMainScreenWidth, 1);
+//    imageView.backgroundColor = [UIColor whiteColor];
+//    [view addSubview:imageView];
+//    return view;
+//}
+
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *identifier=@"cell";
+    HotLeftTVCell *cell=[tableView dequeueReusableCellWithIdentifier:identifier];
+    if (!cell) {
+        cell=[[HotLeftTVCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:identifier];
+    }
+    cell.backgroundColor = kRGB(36, 40, 45);
+    cell.selectedBackgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"activity_cell_selected"]];
+    NSArray *arr = _allTopicTitle[indexPath.section];
+    cell.title.text = arr[indexPath.row];
+    cell.title.font  = [UIFont boldSystemFontOfSize:14];
+    
+    UIImageView * imageView = [[UIImageView alloc]init];
+    CGRect frame = cell.frame;
+    frame.origin.y = frame.size.height - 1;
+    frame.size.height = 1;
+    imageView.frame = frame;
+    imageView.backgroundColor = [UIColor whiteColor];
+    [cell addSubview:imageView];
+    
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    AppDelegate * app = [AppDelegate shareInstace];
+//    NSInteger currentSelected = indexPath.row;
+//    if (currentSelected != self.lastSelected) {
+//        NSLog(@"需要重置");
+//        self.lastSelected = indexPath.row;
+//    }else{
+//        NSLog(@"不需要重置");
+//        [self.mm_drawerController setCenterViewController:app.mTbc withCloseAnimation:YES completion:nil];
+//    }
+    
+    [self careateRightController:indexPath setApp:app];
+}
+
+
+-(void)careateRightController:(NSIndexPath *)indexPath setApp:(AppDelegate *)app{
+    switch (indexPath.section) {
+        case 0:
+        {
+            switch (indexPath.row) {
+                case 0://全部话题
+                {
+                    AnnouncementAllVC * ann = [[AnnouncementAllVC alloc]  init];//分类话题
+                    [app.mTbc reloadTBCWithController:ann];
+                    [self.mm_drawerController setCenterViewController:app.mTbc withCloseAnimation:YES completion:nil];
+                }
+                    break;
+                case 1:
+                {
+                    HotTopicViewController * hot = [[HotTopicViewController alloc]  init];
+                    hot.navLeftType = LeftDrawer;
+                    hot.titileS = @"身边热点";
+                    hot.showTop = NO;
+                    hot.talkMark = RoundHot;
+                    [app.mTbc reloadTBCWithController:hot];
+                    [self.mm_drawerController setCenterViewController:app.mTbc withCloseAnimation:YES completion:nil];
+                }
+                    break;
+                case 2:
+                {
+                    HotTopicViewController * hot = [[HotTopicViewController alloc]  init];
+                    hot.navLeftType = LeftDrawer;
+                    hot.titileS = @"熟人话题";
+                    hot.showTop = NO;
+                    hot.talkMark = FriendSTalk;
+                    [app.mTbc reloadTBCWithController:hot];
+                    [self.mm_drawerController setCenterViewController:app.mTbc withCloseAnimation:YES completion:nil];
+                    
+                }
+                    break;
+                case 3:
+                {
+                    HotTopicViewController * hot = [[HotTopicViewController alloc]  init];
+                    hot.navLeftType = LeftDrawer;
+                    hot.titileS = @"同年龄段话题";
+                    hot.showTop = NO;
+                    hot.talkMark = AgeSearch;
+                    [app.mTbc reloadTBCWithController:hot];
+                    [self.mm_drawerController setCenterViewController:app.mTbc withCloseAnimation:YES completion:nil];
+                }
+                    break;
+                case 4:
+                {
+                    HotTopicViewController * hot = [[HotTopicViewController alloc]  init];
+                    hot.navLeftType = LeftDrawer;
+                    hot.titileS = @"今日十大";
+                    hot.showTop = YES;
+                    hot.talkMark = TenTop;
+                    [app.mTbc reloadTBCWithController:hot];
+                    [self.mm_drawerController setCenterViewController:app.mTbc withCloseAnimation:YES completion:nil];
+                }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+        }
+        case 1:
+        {
+            switch (indexPath.row) {
+                    
+                case 0://我的话题
+                {
+                    /*
+                     MyTalkVC * myTalk = [[MyTalkVC alloc]  init];
+                     [app.mTbc reloadTBCWithController:myTalk];
+                     [self.mm_drawerController setCenterViewController:app.mTbc withCloseAnimation:YES completion:nil];
+                     */
+                    
+                    HotTopicViewController * hot = [[HotTopicViewController alloc]  init];
+                    hot.navLeftType = LeftDrawer;
+                    hot.titileS = @"我的话题";
+                    hot.showTop = NO;
+                    hot.talkMark = MyTopicList;
+                    [app.mTbc reloadTBCWithController:hot];
+                    [self.mm_drawerController setCenterViewController:app.mTbc withCloseAnimation:YES completion:nil];
+                    
+                    
+                }
+                    break;
+                    
+                    
+                default:
+                    break;
+            }
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+
+@end

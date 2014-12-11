@@ -1,0 +1,398 @@
+//
+//  AppDelegate.m
+//  if_wapeng
+//
+//  Created by 永不死的圣斗士 on 14-6-17.
+//  Copyright (c) 2014年 funeral. All rights reserved.
+//
+#define dModule(i)  i // 不同的模块 1.橱窗 2.话题 3.活动 4.我的
+#import "AppDelegate.h"
+
+#import "IF_TBCViewController.h"
+//#import "BMapKit.h"
+#import "MMDrawerVisualState.h"
+#import "MMExampleDrawerVisualStateManager.h"
+
+
+#import "WelcomeVC.h"
+#import "LoginViewController.h"
+#import "ActivityLeftVC.h"
+#import "HotTopicViewController.h"
+#import "HotLeftViewController.h"
+#import "LoginVC00.h"
+#import "IQKeyBoardManager.h"
+#import "UIColor+AddColor.h"
+#import "UINavigationBar+FlatUI.h"
+
+//我的页面
+#import "MeLeftVC.h"
+#import "MeMiddleVC.h"
+#import "MeRightVC.h"
+#import "SDWebImageManager.h"
+
+//橱窗页面
+#import "TotalVC.h"
+#import "AllShowWindowVC.h"
+#import "ShowWindowLeftVC.h"
+#import "MyDatumVC.h"
+#import "MeRightVC.h"
+#import "ActivityLeftVC.h"
+#import "SellerAcitvityVC.h"
+
+#import "UIDevice+IdentifierAddition.h"
+@implementation AppDelegate
+
+@synthesize managedObjectContext = _managedObjectContext;
+@synthesize managedObjectModel = _managedObjectModel;
+@synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
+
+
+#pragma mark - 处理异常
+void uncaughtExceptionHandler(NSException *exception) {
+    NSLog(@"CRASH: %@", exception);
+    NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
+    // Internal error reporting
+}
+
+-(void)showViewController:(int)type
+{
+    if (self.mmVC) {
+        self.mmVC = nil;
+    }
+    switch (type) {
+        case showVCTypeLogin:
+        {
+//            LoginViewController * loginVC = [[LoginViewController alloc]init];
+////            LoginVC00 * loginVC = [[LoginVC00 alloc]init];
+//
+//            UINavigationController * nc = [[UINavigationController alloc]initWithRootViewController:loginVC];
+//            //设置导航条颜色，暂时不用
+////            [nc.navigationBar configureFlatNavigationBarWithColor:[UIColor colorWithHexString:@"#FFFACD"]];
+//    
+//            nc.navigationController.navigationBar.translucent = YES;
+//            nc.navigationBar.hidden = YES;
+//            self.window.rootViewController = nc;
+            
+            WelcomeVC * welcomeVC = [[WelcomeVC alloc]initWithNibName:@"WelcomeVC" bundle:nil];
+            
+            UINavigationController * nc = [[UINavigationController alloc]initWithRootViewController:welcomeVC];
+            self.window.rootViewController = nc;
+        }
+            break;
+        case showVCTypeTab:
+        {
+            
+            if (self.loginDict) {
+                NSLog(@"登录成功");
+                
+                NSLog(@"%@", self.loginDict);
+                
+                NSUserDefaults * d = [NSUserDefaults standardUserDefaults];
+                NSString * ddid = [NSString stringWithFormat:@"%@", [self.loginDict objectForKey:@"d_ID"]];
+                [d setObject:ddid forKey:UD_ddid];
+                
+                //保存用户类型
+                NSNumber * userType = [self.loginDict objectForKey:@"userTypeID"];
+                [d setObject:userType forKey:UD_userType];
+                
+                
+                NSMutableDictionary * dict = [[NSMutableDictionary alloc]initWithDictionary:self.loginDict];
+                [dict removeObjectForKey:@"organizationID"];
+                
+                if ([[dict objectForKey:@"currentChildID"] isKindOfClass:[NSNull class]]) {
+                     [dict removeObjectForKey:@"currentChildID"];
+                }
+
+                
+                [d setObject:dict forKey:UD_loginDict];
+                
+                NSLog(@"ud_dict:%@", dict);
+                
+                [self createMMVC];
+                
+                 self.window.rootViewController = self.mmVC;
+            }
+            break;
+        }
+            case 3:
+        {
+            [self createMMVC];
+            
+            self.window.rootViewController = self.mmVC;
+
+        }
+        default:
+            break;
+    }
+}
+
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
+    /*百度地图暂时注释，需要的时候再打开*/
+//    [IQKeyBoardManager installKeyboardManager];
+    
+    //百度地图
+//    _mapManager = [[BMKMapManager alloc]init];
+//	BOOL ret = [_mapManager start:@"tFShFhC5x72hOInkMGLIt6aV" generalDelegate:self];
+//	if (!ret) {
+//		NSLog(@"百度地图manager注册失败");
+//	}
+    [self loadUserDefault];
+    
+    [self showViewController:showVCTypeLogin];
+    
+    [self getUUID];
+    
+    self.window.backgroundColor = [UIColor whiteColor];
+
+    [self.window makeKeyAndVisible];
+    
+    //处理异常
+     NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
+    
+    return YES;
+}
+/**初始化本地变量**/
+-(void)loadUserDefault
+{
+    NSUserDefaults * d = [NSUserDefaults standardUserDefaults];
+    
+    //默认为yes
+    BOOL receiveRemoteNoti = YES;
+    
+    NSNumber * num = [NSNumber numberWithInt:receiveRemoteNoti];
+    
+    [d setObject:num forKey:UD_remoteNoti];
+}
+
+-(void)getUUID
+{
+    //设备物理地址 + bundleID 进行加密
+    self.uuid = [[UIDevice currentDevice] newUniqueDeviceIdentifier];
+    NSLog(@"app代理的uuid=%@",self.uuid);
+    //设备物理地址 直接加密
+    self.globalUuid = [[UIDevice currentDevice] uniqueGlobalDeviceIdentifier];
+    NSUserDefaults * d = [NSUserDefaults standardUserDefaults];
+    [d setObject:self.uuid forKey:UD_uuid];
+    [d setObject:self.globalUuid forKey:UD_globaluuid];
+}
+-(void)createMMVC
+{
+
+    TotalVC * vc01 = [[TotalVC alloc]init];
+    vc01.title = @"橱窗全部";
+    UINavigationController * nav1 = [[UINavigationController alloc]initWithRootViewController:vc01];
+    
+    HotTopicViewController * vc02 = [[HotTopicViewController alloc]init];
+    
+    UINavigationController * nav2 = [[UINavigationController alloc]initWithRootViewController:vc02];
+    
+    SellerAcitvityVC * vc03 = [[SellerAcitvityVC alloc]init];
+    vc03.pageType = 3;
+    vc03.title = @"商家组织的活动";
+    
+    UINavigationController * nav3 = [[UINavigationController alloc]initWithRootViewController:vc03];
+    
+    MeMiddleVC * vc04 = [[MeMiddleVC alloc]init];
+    
+    UINavigationController * nav4 = [[UINavigationController alloc]initWithRootViewController:vc04];
+    
+    self.nav1 = nav1;
+    self.nav2 = nav2;
+    self.nav3 = nav3;
+    self.nav4 = nav4;
+    
+    NSArray * arr =  @[self.nav1, self.nav2, self.nav3, self.nav4];
+    
+    self.mTbc = [[IF_TBCViewController alloc]init];
+    self.mTbc.viewControllers = arr;
+    [self.mTbc  setItemWithIndexBg:0];
+    ShowWindowLeftVC * leftVC = [[ShowWindowLeftVC alloc]init];
+    
+    MeRightVC * rightVC = [[MeRightVC alloc]init];
+    
+    MMDrawerController * mmVC = [[MMDrawerController alloc]initWithCenterViewController:self.mTbc leftDrawerViewController:leftVC rightDrawerViewController:rightVC];
+    [mmVC setMaximumLeftDrawerWidth:kMainScreenWidth * 0.618];
+    //设置开启手势和关闭手势
+    [mmVC setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeAll];
+    [mmVC setCloseDrawerGestureModeMask:MMCloseDrawerGestureModeAll];
+    
+    [mmVC setDrawerVisualStateBlock:^(MMDrawerController *drawerController, MMDrawerSide drawerSide, CGFloat percentVisible) {
+        MMDrawerControllerDrawerVisualStateBlock block;
+        block = [[MMExampleDrawerVisualStateManager sharedManager] drawerVisualStateBlockForDrawerSide:drawerSide];
+        if (block) {
+            block(drawerController,drawerSide,percentVisible);
+            //展示的左视图的百分比作为阿尔法
+//            NSLog(@"%f", percentVisible);
+//            drawerController.leftDrawerViewController.view.alpha = percentVisible;
+        }
+    }];
+    self.mmVC = mmVC;
+}
+
++(instancetype)shareInstace
+{
+    return (AppDelegate *)[[UIApplication sharedApplication] delegate];
+}
+#pragma mark tabbarcontrollerdelegate
+
+- (void)applicationWillResignActive:(UIApplication *)application
+{
+    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
+    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
+    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application
+{
+    // Saves changes in the application's managed object context before the application terminates.
+    [self saveContext];
+}
+
+- (void)saveContext
+{
+    NSError *error = nil;
+    NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
+    if (managedObjectContext != nil) {
+        if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
+             // Replace this implementation with code to handle the error appropriately.
+             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. 
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            abort();
+        } 
+    }
+}
+
+#pragma mark - Core Data stack
+
+// Returns the managed object context for the application.
+// If the context doesn't already exist, it is created and bound to the persistent store coordinator for the application.
+- (NSManagedObjectContext *)managedObjectContext
+{
+    if (_managedObjectContext != nil) {
+        return _managedObjectContext;
+    }
+    
+    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
+    if (coordinator != nil) {
+        _managedObjectContext = [[NSManagedObjectContext alloc] init];
+        [_managedObjectContext setPersistentStoreCoordinator:coordinator];
+    }
+    return _managedObjectContext;
+}
+
+// Returns the managed object model for the application.
+// If the model doesn't already exist, it is created from the application's model.
+- (NSManagedObjectModel *)managedObjectModel
+{
+    if (_managedObjectModel != nil) {
+        return _managedObjectModel;
+    }
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"if_wapeng" withExtension:@"momd"];
+    _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    return _managedObjectModel;
+}
+
+// Returns the persistent store coordinator for the application.
+// If the coordinator doesn't already exist, it is created and the application's store added to it.
+- (NSPersistentStoreCoordinator *)persistentStoreCoordinator
+{
+    if (_persistentStoreCoordinator != nil) {
+        return _persistentStoreCoordinator;
+    }
+    
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"if_wapeng.sqlite"];
+    
+    NSError *error = nil;
+    _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
+    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
+        /*
+         Replace this implementation with code to handle the error appropriately.
+         
+         abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. 
+         
+         Typical reasons for an error here include:
+         * The persistent store is not accessible;
+         * The schema for the persistent store is incompatible with current managed object model.
+         Check the error message to determine what the actual problem was.
+         
+         
+         If the persistent store is not accessible, there is typically something wrong with the file path. Often, a file URL is pointing into the application's resources directory instead of a writeable directory.
+         
+         If you encounter schema incompatibility errors during development, you can reduce their frequency by:
+         * Simply deleting the existing store:
+         [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil]
+         
+         * Performing automatic lightweight migration by passing the following dictionary as the options parameter:
+         @{NSMigratePersistentStoresAutomaticallyOption:@YES, NSInferMappingModelAutomaticallyOption:@YES}
+         
+         Lightweight migration will only work for a limited set of schema changes; consult "Core Data Model Versioning and Data Migration Programming Guide" for details.
+         
+         */
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }    
+    
+    return _persistentStoreCoordinator;
+}
+
+#pragma mark - Application's Documents directory
+
+// Returns the URL to the application's Documents directory.
+- (NSURL *)applicationDocumentsDirectory
+{
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+}
+
+#pragma mark--BaiduMapDelegate
+//- (void)onGetNetworkState:(int)iError
+//{
+//    if (0 == iError) {
+//        NSLog(@"联网成功");
+//    }
+//    else{
+//        NSLog(@"onGetNetworkState %d",iError);
+//    }
+//    
+//}
+//- (void)onGetPermissionState:(int)iError
+//{
+//    if (0 == iError) {
+//        NSLog(@"授权成功");
+//    }
+//    else { 
+//        NSLog(@"onGetPermissionState %d",iError);
+//    }
+//    
+//}
+
+- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
+{
+    // 清除图片缓存
+    // 1.清除内存中的缓存图片
+    [[SDImageCache sharedImageCache] clearMemory];
+    
+    // 2.取消所有的下载请求
+    [[SDWebImageManager sharedManager] cancelAll];
+}
+
+@end

@@ -1,0 +1,73 @@
+//
+//  Prefix header
+//
+//  The contents of this file are implicitly included at the beginning of every source file.
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_3_0
+#warning "This project uses features only available in iOS SDK 3.0 and later."
+#endif
+
+#ifdef __OBJC__
+    #import <UIKit/UIKit.h>
+    #import <Foundation/Foundation.h>
+    #import <CoreData/CoreData.h>
+
+    #define DEFAULT_thumbImageWidth 260.0f
+    #define DEFAULT_thumbImageHeight 347.0f
+typedef enum listType{
+    Hot = 0,
+    Cool
+}TypeMark;
+
+typedef enum{
+    RoundHot = 0, //身边热点
+    FriendSTalk,//熟人话题
+    AgeSearch,//同龄的概念检索
+    RoundOrganization,//身边机构
+    TenTop,//今日十大
+    TalkCollect,//话题收藏
+    
+    AgeTalk,//同龄话题分类话题里面的
+    SearchWord,//全局搜索
+    
+    MyTopicList//我的话题
+    
+}TalkTypeMark;
+
+typedef enum {
+    TopicHot = 0,//热度
+    TopicTime,//时间
+    TopicRelation//关系
+}TopicReplyQueryType;//话题详细-按照3种类型排序
+
+typedef enum{
+    LeftDrawer = 0,
+    LeftBack
+}NavigationLeftType;//话题的navigationbar 的 左上角按钮是返回键还是抽屉键
+
+typedef enum {
+    TouchConfirm = 0,
+    TouchEnd
+}TouchEventType;//dialog 确定键 还是 返回
+
+typedef enum {
+    TopicDetailReply = 0,//话题详细里面的回复
+    TopicDetailCollect,//话题详细里面的收藏
+    TopicDetailCopy,//话题详细里面的拷贝
+    TopicDetailReport,//话题详细里面的举报
+    TopicDetailDelete//话题详细里面的删除
+}TopicDetailSendType;//话题详细里面的发送类型
+
+typedef enum {
+    TopicOperationAuthor = 0,
+    TopicOperationReply
+}TopicOperationTyoe;//话题的操作是对楼主还是回帖
+
+
+#endif
+#import "totalConstants.h"
+#import "AFNetworking.h"
+#import "AFN_HttpBase.h"

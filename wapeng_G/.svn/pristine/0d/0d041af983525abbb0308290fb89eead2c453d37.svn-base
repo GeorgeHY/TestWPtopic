@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RegisterVC04">
+            <connections>
+                <outlet property="babyBirthday" destination="n5g-MT-bs7" id="EWI-lc-OLb"/>
+                <outlet property="babyName" destination="WGd-92-xF5" id="yG5-eb-b4H"/>
+                <outlet property="boy" destination="X60-eZ-HDs" id="XNy-W2-Dd8"/>
+                <outlet property="girl" destination="lzd-Y6-GA7" id="zHu-K7-Nv9"/>
+                <outlet property="hospital" destination="jLE-iy-1uN" id="aSo-Yh-1p2"/>
+                <outlet property="lable" destination="Uqn-Wf-cWJ" id="LSo-BH-h4d"/>
+                <outlet property="twins" destination="5fw-KL-fW6" id="9cL-yl-aD7"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="jzc-St-mUr"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="44" width="320" height="416"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder="宝宝昵称" minimumFontSize="17" background="public_tf.png" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="WGd-92-xF5" customClass="InsetsTextField">
+                    <rect key="frame" x="20" y="24" width="182" height="35"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits"/>
+                </textField>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="bezel" placeholder="出生日期" minimumFontSize="5" background="public_tf.png" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="n5g-MT-bs7" customClass="InsetsTextField">
+                    <rect key="frame" x="20" y="122" width="275" height="35"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits"/>
+                </textField>
+                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder="宝宝出生医院" minimumFontSize="17" background="public_tf.png" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="jLE-iy-1uN" customClass="InsetsTextField">
+                    <rect key="frame" x="20" y="202" width="277" height="35"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits"/>
+                </textField>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lzd-Y6-GA7">
+                    <rect key="frame" x="257" y="19" width="35" height="35"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <state key="normal" backgroundImage="baby_w_n.png">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X60-eZ-HDs">
+                    <rect key="frame" x="216" y="19" width="35" height="35"/>
+                    <state key="normal" backgroundImage="baby_m_r.png">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5fw-KL-fW6">
+                    <rect key="frame" x="20" y="288" width="30" height="30"/>
+                    <state key="normal" backgroundImage="register1_check0.png">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jaT-vG-l4Z">
+                    <rect key="frame" x="16" y="337" width="279" height="37"/>
+                    <state key="normal" title="下一步" backgroundImage="public_red_btn.png">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="nextBtnClick:" destination="-1" eventType="touchUpInside" id="T98-ns-s3g"/>
+                    </connections>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="起一个易于辨识的名字吧这样邻家宝宝的父母和老师更容易发现您" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="268" translatesAutoresizingMaskIntoConstraints="NO" id="Dwc-cv-G91">
+                    <rect key="frame" x="27" y="73" width="268" height="35"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="正确填写有助于结识身边同龄宝宝父母" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="267" translatesAutoresizingMaskIntoConstraints="NO" id="XTd-H3-LjK">
+                    <rect key="frame" x="21" y="165" width="267" height="29"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="有机会找到同一天出生的宝宝和妈妈哦" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="267" translatesAutoresizingMaskIntoConstraints="NO" id="5mw-la-ggs">
+                    <rect key="frame" x="28" y="245" width="267" height="29"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="我的宝宝是双胞胎/多胞胎" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uqn-Wf-cWJ">
+                    <rect key="frame" x="52" y="285" width="219" height="33"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="baby_m_r.png" width="236" height="222"/>
+        <image name="baby_w_n.png" width="236" height="222"/>
+        <image name="public_red_btn.png" width="251" height="81"/>
+        <image name="public_tf.png" width="326" height="87"/>
+        <image name="register1_check0.png" width="22" height="22"/>
+    </resources>
+</document>
