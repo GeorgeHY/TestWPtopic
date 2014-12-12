@@ -17,5 +17,6 @@
 @property(nonatomic , retain) NSString * head;
 @property(nonatomic , retain) NSString * name;
 @property(nonatomic , retain) NSString * createTime;
+@property(nonatomic , retain) NSString * userPhotoUrl;
 @property (nonatomic, assign) int isButtom;//是否有下一页
 @end

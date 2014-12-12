@@ -10,6 +10,8 @@
 	<string>if_wapeng</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
+		<key>B0D9D3E6688A0CC1FF8082053A01965FDEB25C12</key>
+		<string>https://github.com/GeorgeHY/TestWPtopic.git</string>
 		<key>b85d5812-6876-4f2a-8378-a53c1cf0ffae++8935</key>
 		<string>http://192.168.1.226:18080/svn/iOS/trunk/wapeng</string>
 	</dict>
@@ -17,6 +19,8 @@
 	<string>if_wapeng.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
+		<key>B0D9D3E6688A0CC1FF8082053A01965FDEB25C12</key>
+		<string>../../..</string>
 		<key>b85d5812-6876-4f2a-8378-a53c1cf0ffae++8935</key>
 		<string>../..</string>
 	</dict>
@@ -33,6 +37,14 @@
 	<string>b85d5812-6876-4f2a-8378-a53c1cf0ffae++8935</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>B0D9D3E6688A0CC1FF8082053A01965FDEB25C12</string>
+			<key>IDESourceControlWCCName</key>
+			<string></string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.subversion</string>

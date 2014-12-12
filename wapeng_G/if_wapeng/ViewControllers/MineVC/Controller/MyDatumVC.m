@@ -294,6 +294,8 @@
     UIImage *icon = [UIImage imageNamed:@"zjgw_logo"];
     UIImageView *iconView = [[UIImageView alloc]initWithImage:icon];
     //设置头像
+    
+    
     [iconView setImageWithURL:[NSURL URLWithString:self.item.relativePath] placeholderImage:kDefaultPic];
     
     iconView.frame = CGRectMake(0, 0, 70, 70);

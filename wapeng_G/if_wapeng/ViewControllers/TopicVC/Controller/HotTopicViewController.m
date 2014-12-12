@@ -53,6 +53,7 @@
     AppDelegate * app;
     NSString * D_ID;//登陆的d_id
     NSString * searchContent;
+    NSString * userPhotoUrl;
 }
 @property(nonatomic ,strong)NSMutableArray * hotWordArray;//热词搜索
 
@@ -95,11 +96,13 @@
         self.automaticallyAdjustsScrollViewInsets = YES;
     }
     D_ID = [app.loginDict  objectForKey:@"d_ID"];
+    NSLog(@"D_ID = %@",D_ID);
     [self createNavigation];
     [[NSNotificationCenter defaultCenter]  addObserver:self selector:@selector (refreshSrocll:) name:@"hotWord" object:nil];
 }
 -(void)refreshSrocll:(NSNotification *)notification
 {
+    //热门搜索词
     [self createSearchHotWord];
     
 }
@@ -116,6 +119,7 @@
 //设置请求参数 并 请求数据
 -(void)setRequesParameterAndRequesData
 {
+    NSLog(@"self.talkMark = %u",self.talkMark);
     switch (self.talkMark) {
         case RoundHot:
             requestUrl = TOP_1_2_11;
@@ -127,7 +131,6 @@
             int pag = [pageNum intValue] + 1;//每次请求后 都加1
             pageNum = [NSString stringWithFormat:@"%d",pag];
             break;
-            
         case AgeSearch:
             requestUrl = TOP_1_2_12;
             [self setAgeSearchDictionaryValue];
@@ -168,14 +171,19 @@
 -(void)requestHttp{
     __weak HotTopicViewController * weakSelf = self;
     [http fiveReuqestUrl:requestUrl postDict:parameter succeed:^(NSObject *obj, BOOL isFinished) {
+        //
+        //NSLog(@"~~~~~~~~~~~~~返回结果:%@",obj);
         if (self.talkMark == TenTop) {
+            NSLog(@"self.talkMark == TenTop");
             NSArray * array = [(NSDictionary *)obj  objectForKey:@"value"];
             [weakSelf responeTenTopData:array];
         }else if(self.talkMark == MyTopicList){
+            NSLog(@"self.talkMark == MyTopicList");
             NSDictionary * dic = [(NSDictionary *)obj  objectForKey:@"value"];
             [weakSelf responeMyTopicListData:dic];
             
         }else{
+            NSLog(@"self.talkMark == else");
             NSDictionary * dic = [(NSDictionary *)obj  objectForKey:@"value"];
             if((NSNull *)dic == [NSNull null]){
                 [weakSelf  stopRefresh];
@@ -226,6 +234,12 @@
         NSArray * array = [value objectForKey:@"list"];
         for (int i = 0; i < array.count; i++) {
             NSDictionary * d = [array  objectAtIndex:i];
+            //解析头像地址
+            NSDictionary * author = [d objectForKey:@"author"];
+            NSLog(@"author data = %@",author);
+            
+            
+            
             NSString * content = [d objectForKey:@"content"];
             NSString * replies = [NSString stringWithFormat:@"%@",[d objectForKey:@"replies"]];
             NSString * friendPartInCount = [NSString stringWithFormat:@"%@",[d objectForKey:@"viewFriendPartInCount"]];
@@ -327,7 +341,7 @@
 
 
 
-//上拉刷新
+//下拉刷新
 -(void)headerRereshing{
     [self resetRequestData];
     [self.dateSource  removeAllObjects];
@@ -339,7 +353,7 @@
         return;
     }
 }
-//下拉加载
+//上拉加载
 -(void)footerRereshing{
     if ([isButtom isEqualToString:@"0"]) {
         [self setRequesParameterAndRequesData];
@@ -381,9 +395,31 @@
     isButtom = [NSString stringWithFormat:@"%@",[dic  objectForKey:@"isButtom"]];
     NSMutableArray * array;
     array = [dic objectForKey:@"list"];
+    NSLog(@"array.count = %d",array.count);
     for (int i = 0; i < array.count; i++) {
         NSDictionary * d = [array  objectAtIndex:i];
         NSString * content = [d objectForKey:@"content"];
+        //头像地址
+        
+        NSDictionary * author = [d objectForKey:@"author"];
+//        NSLog(@"author data = %@",author);
+        NSDictionary * photo = [author objectForKey:@"photo"];
+        if ([photo isEqual:[NSNull null]]) {
+            NSLog(@"photo 为空");
+            userPhotoUrl = @"http://115.100.250.35:8080/wpa/wb/wpub/imgAction_img.action?A_ID=11/8/8/3/29699304-da21-4038-9931-e419af712fa3_jpg";
+        }else{
+            NSString * relativePath = [photo objectForKey:@"relativePath"];
+            NSLog(@"relativePath data = %@",relativePath);
+            userPhotoUrl = [NSString stringWithFormat:@"%@%@",dUrl_PhotoPrefixion,relativePath];
+            NSLog(@"~~~~~~~~~~~~userPhotoUrl = %@",userPhotoUrl);
+            
+//            item.photoUrl = [NSString stringWithFormat:@"%@%@",dUrl_PhotoPrefixion, [[[dict objectForKey:@"author"] objectForKey:@"photo"] objectForKey:@"relativePath"]];
+
+        }
+
+//再把前面的地址拼上
+        
+        
         NSString * replies = [NSString stringWithFormat:@"%@",[d objectForKey:@"replies"]];
         NSString * friendPartInCount = [NSString stringWithFormat:@"%@",[d objectForKey:@"viewFriendPartInCount"]];
         NSString * title = [d objectForKey:@"title"];
@@ -397,6 +433,7 @@
         hotTop.person =friendPartInCount;
         hotTop.content = content;
         hotTop.name = title;
+        hotTop.userPhotoUrl = userPhotoUrl;
         [self.dateSource addObject:hotTop];
     }
     [self stopRefresh];
@@ -660,15 +697,30 @@
         cell.personLable.text = hotTopic.person;
         cell.contentLable.text = hotTopic.content;
         cell.nameLable.text = hotTopic.name;
-        NSString * url = @"http://115.100.250.35:8080/wpa/wb/wpub/imgAction_img.action?A_ID=11/8/8/3/29699304-da21-4038-9931-e419af712fa3_jpg";
-        NSString * imageName = [NSString stringWithFormat:@"%@%@%@",[FileManger documentPath] ,@"/tableImage",@"/tupian.jpg"];
+//        NSString * url = @"http://115.100.250.35:8080/wpa/wb/wpub/imgAction_img.action?A_ID=11/8/8/3/29699304-da21-4038-9931-e419af712fa3_jpg";
+//        NSString * imageName = [NSString stringWithFormat:@"%@%@%@",[FileManger documentPath] ,@"/tableImage",@"/tupian.jpg"];
         //判断文件在document下是否存在
-        if ([FileManger opinionFileIsEmpty:imageName]) {
-            UIImage *img = [UIImage imageWithContentsOfFile:imageName];
-            cell.headImageView.image = img;
+//        if ([FileManger opinionFileIsEmpty:imageName]) {
+//            UIImage *img = [UIImage imageWithContentsOfFile:imageName];
+//            cell.headImageView.image = img;
+//        }else{
+//            [DownloadImageManger downloadImageUrl:url setImageView:cell.headImageView];
+//        }
+
+    
+        if ([hotTopic.userPhotoUrl isEqualToString:@"http://115.100.250.35:8080/wpa/wb/wpub/imgAction_img.action?A_ID=11/8/8/3/29699304-da21-4038-9931-e419af712fa3_jpg"]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                cell.headImageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"1111111.png"]];
+            });
+
         }else{
-            [DownloadImageManger downloadImageUrl:url setImageView:cell.headImageView];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [cell.headImageView setImageWithURL:[NSURL URLWithString:hotTopic.userPhotoUrl]];
+            });
+            
         }
+
+        
         
         return cell;
         
@@ -678,40 +730,60 @@
         if (!cell) {
             cell=[[HotTopicTVCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:identifier];
         }
-        
         HotTopicEntity * hotTopic = [_dateSource objectAtIndex:indexPath.row];
-        //        cell.v.hidden = YES;
-        //        if (self.talkMark == TenTop) {
-        //            cell.topLable.text = [NSString stringWithFormat:@"%ld",indexPath.row+1];
-        //            cell.v.hidden = NO;
-        //        }else{
-        //            cell.v.hidden = YES;
-        //        }
-        cell.replyLable.text = hotTopic.reply;
-        cell.personLable.text = hotTopic.person;
-        if((NSNull *)hotTopic.content == [NSNull null]){
-            hotTopic.content = @"AAA";
-        }
-        cell.contentLable.text = hotTopic.content;
-        if((NSNull *)hotTopic.name == [NSNull null]){
-            hotTopic.name = @"AAA";
-        }
-        cell.nameLable.text = hotTopic.name;
+
         
-        NSString * url = @"http://115.100.250.35:8080/wpa/wb/wpub/imgAction_img.action?A_ID=11/8/8/3/29699304-da21-4038-9931-e419af712fa3_jpg";
-        NSString * imageName = [NSString stringWithFormat:@"%@%@%@",[FileManger documentPath] ,@"/tableImage",@"/tupian.jpg"];
-        //        //判断文件在document下是否存在
-        if ([FileManger opinionFileIsEmpty:imageName]) {
-            UIImage *img = [UIImage imageWithContentsOfFile:imageName];
-            cell.headImageView.image = img;
-        }else{
-            [DownloadImageManger downloadImageUrl:url setImageView:cell.headImageView];
+            //        cell.v.hidden = YES;
+            //        if (self.talkMark == TenTop) {
+            //            cell.topLable.text = [NSString stringWithFormat:@"%ld",indexPath.row+1];
+            //            cell.v.hidden = NO;
+            //        }else{
+            //            cell.v.hidden = YES;
+            //        }
+            cell.replyLable.text = hotTopic.reply;
+            cell.personLable.text = hotTopic.person;
+            if((NSNull *)hotTopic.content == [NSNull null]){
+                hotTopic.content = @"AAA";
+            }
+            cell.contentLable.text = hotTopic.content;
+            if((NSNull *)hotTopic.name == [NSNull null]){
+                hotTopic.name = @"AAA";
+            }
+            cell.nameLable.text = hotTopic.name;
+            
+            //        NSString * url = @"http://115.100.250.35:8080/wpa/wb/wpub/imgAction_img.action?A_ID=11/8/8/3/29699304-da21-4038-9931-e419af712fa3_jpg";
+            //        NSString * imageName = [NSString stringWithFormat:@"%@%@%@",[FileManger documentPath] ,@"/tableImage",@"/tupian.jpg"];
+            //        //判断文件在document下是否存在
+            //        if ([FileManger opinionFileIsEmpty:imageName]) {
+            //            UIImage *img = [UIImage imageWithContentsOfFile:imageName];
+            //            cell.headImageView.image = img;
+            //        }else{
+            //            [DownloadImageManger downloadImageUrl:url setImageView:cell.headImageView];
+            //        }
+            //
+            //        NSLog(@"------ %@",hotTopic.content);
+            
+                if ([hotTopic.userPhotoUrl isEqualToString:@"http://115.100.250.35:8080/wpa/wb/wpub/imgAction_img.action?A_ID=11/8/8/3/29699304-da21-4038-9931-e419af712fa3_jpg"]) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                         cell.headImageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"1111111.png"]];
+                    });
+                    
+                }else{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [cell.headImageView setImageWithURL:[NSURL URLWithString:hotTopic.userPhotoUrl]];
+                    });
+                    
+                }
+            
+            return cell;
         }
         
-        NSLog(@"------ %@",hotTopic.content);
-        return cell;
-    }
+        
+            
 }
+    
+
+
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     HotTopicDetailVC * talk = [[HotTopicDetailVC alloc] init];

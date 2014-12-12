@@ -71,7 +71,7 @@
 
 -(void)textLoginBtn
 {
-    NSArray * name = @[@"机构用户", @"教师用户", @"家长用户1"];
+    NSArray * name = @[@"机构用户", @"教师用户", @"家长用户2"];
     
     for (int i = 0; i < name.count; i++) {
         UIButton * btn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -277,8 +277,8 @@
         {
             //家长用户
             self.accountType  = 2;
-            self.account = @"30000000001";
-            password = @"1111";
+            self.account = @"30000000002";
+            password = @"1234";
         }
             //        case dTag_textBtn(3):
             //        {
@@ -322,7 +322,7 @@
 //            NSLog(@"mei   you");
 //            return ;
 //        }
-        
+        NSLog(@"--------登陆信息 = %@",obj);
 
         NSDictionary * root = (NSDictionary *)obj;
         
