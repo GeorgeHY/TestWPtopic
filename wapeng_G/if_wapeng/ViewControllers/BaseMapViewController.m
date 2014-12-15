@@ -7,6 +7,7 @@
 //
 
 #import "BaseMapViewController.h"
+#import "Constant_general.h"
 
 @implementation BaseMapViewController
 @synthesize mapView = _mapView;
@@ -52,9 +53,11 @@
 
 - (void)initMapView
 {
-    self.mapView.frame = self.view.bounds;
+    self.mapView.frame = CGRectMake(0,SearchBarHeight, kMainScreenWidth, kMainScreenHeight * 0.4);
     
     self.mapView.delegate = self;
+    //ZoomLevel 3-19
+    [self.mapView setZoomLevel:15 animated:YES];
     
     [self.view addSubview:self.mapView];
 }
@@ -90,7 +93,8 @@
 {
     [super viewDidAppear:animated];
     
-    self.mapView.visibleMapRect = MAMapRectMake(220880104, 101476980, 272496, 466656);
+//    self.mapView.visibleMapRect = MAMapRectMake(220880104, 101476980, 272496, 466656);
+    self.tabBarController.tabBar.hidden = YES;
 }
 
 - (void)viewDidLoad
@@ -104,6 +108,7 @@
     [self initMapView];
     
     [self initSearch];
+    self.tabBarController.tabBar.hidden = YES;
 }
 
 @end

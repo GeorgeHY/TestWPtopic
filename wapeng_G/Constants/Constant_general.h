@@ -28,6 +28,9 @@
 #define IOS7     ([[UIDevice currentDevice].systemVersion doubleValue] >= 7.0) 
 //是不是iphone5
 #define kScreenIphone5    (([[UIScreen mainScreen] bounds].size.height)>=568)
+//searchBar height
+#define SearchBarHeight  44
+
 #endif
 
 

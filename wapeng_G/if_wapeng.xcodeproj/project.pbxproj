@@ -601,6 +601,8 @@
 		5C39D07F1A1B1C640042FE9A /* 0002_LOGO.png in Resources */ = {isa = PBXBuildFile; fileRef = 5C39D07D1A1B1C640042FE9A /* 0002_LOGO.png */; };
 		5C39D0831A1B1D9F0042FE9A /* SetPasswordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C39D0811A1B1D9F0042FE9A /* SetPasswordViewController.m */; };
 		5C39D0841A1B1D9F0042FE9A /* SetPasswordViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5C39D0821A1B1D9F0042FE9A /* SetPasswordViewController.xib */; };
+		5C792DE51A3EB2730090FE22 /* Location.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C792DE41A3EB2730090FE22 /* Location.m */; };
+		5C792DE81A3EB4120090FE22 /* POIAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C792DE71A3EB4120090FE22 /* POIAnnotation.m */; };
 		5C8B21851A1C47AF00F24AE4 /* Item_BabyInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C8B21841A1C47AF00F24AE4 /* Item_BabyInfo.m */; };
 		5C8E7FED1A37FB91000BE1F6 /* BaseMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C8E7FE81A37FB91000BE1F6 /* BaseMapViewController.m */; };
 		5C8E7FEF1A37FB91000BE1F6 /* GeoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C8E7FEC1A37FB91000BE1F6 /* GeoViewController.m */; };
@@ -1840,6 +1842,10 @@
 		5C39D0801A1B1D9F0042FE9A /* SetPasswordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetPasswordViewController.h; sourceTree = "<group>"; };
 		5C39D0811A1B1D9F0042FE9A /* SetPasswordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetPasswordViewController.m; sourceTree = "<group>"; };
 		5C39D0821A1B1D9F0042FE9A /* SetPasswordViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SetPasswordViewController.xib; sourceTree = "<group>"; };
+		5C792DE31A3EB2730090FE22 /* Location.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Location.h; sourceTree = "<group>"; };
+		5C792DE41A3EB2730090FE22 /* Location.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Location.m; sourceTree = "<group>"; };
+		5C792DE61A3EB4120090FE22 /* POIAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = POIAnnotation.h; sourceTree = "<group>"; };
+		5C792DE71A3EB4120090FE22 /* POIAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = POIAnnotation.m; sourceTree = "<group>"; };
 		5C8B21831A1C47AF00F24AE4 /* Item_BabyInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Item_BabyInfo.h; sourceTree = "<group>"; };
 		5C8B21841A1C47AF00F24AE4 /* Item_BabyInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Item_BabyInfo.m; sourceTree = "<group>"; };
 		5C8E7FE71A37FB91000BE1F6 /* BaseMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseMapViewController.h; sourceTree = "<group>"; };
@@ -3958,10 +3964,9 @@
 			name = View;
 			sourceTree = "<group>";
 		};
-		5C8E7FE61A37F89A000BE1F6 /* PublicVC */ = {
+		5C792DE11A3EB2000090FE22 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				5C8E7FF41A381C17000BE1F6 /* Configuration */,
 				5C8E7FF01A37FD8D000BE1F6 /* GeoDetailViewController.h */,
 				5C8E7FF11A37FD8D000BE1F6 /* GeoDetailViewController.m */,
 				5C8E7FE71A37FB91000BE1F6 /* BaseMapViewController.h */,
@@ -3970,6 +3975,27 @@
 				5C8E7FF91A38243F000BE1F6 /* UserLocationViewController.m */,
 				5C8E7FEB1A37FB91000BE1F6 /* GeoViewController.h */,
 				5C8E7FEC1A37FB91000BE1F6 /* GeoViewController.m */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
+		5C792DE21A3EB21B0090FE22 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				5C792DE31A3EB2730090FE22 /* Location.h */,
+				5C792DE41A3EB2730090FE22 /* Location.m */,
+				5C792DE61A3EB4120090FE22 /* POIAnnotation.h */,
+				5C792DE71A3EB4120090FE22 /* POIAnnotation.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		5C8E7FE61A37F89A000BE1F6 /* PublicVC */ = {
+			isa = PBXGroup;
+			children = (
+				5C792DE21A3EB21B0090FE22 /* Model */,
+				5C792DE11A3EB2000090FE22 /* Controller */,
+				5C8E7FF41A381C17000BE1F6 /* Configuration */,
 			);
 			name = PublicVC;
 			sourceTree = "<group>";
@@ -4900,6 +4926,7 @@
 				1865CA971A35471400417FAD /* HeaderKindView.m in Sources */,
 				1846170A19B2A27700644553 /* AllActivityVC.m in Sources */,
 				180DFF5919D7F8CC004377F5 /* SDWebImageManager+MJ.m in Sources */,
+				5C792DE51A3EB2730090FE22 /* Location.m in Sources */,
 				34299DC719FF7EDB00571BD9 /* Item_MyMailEntity.m in Sources */,
 				18F98D5619F4B9A100769E86 /* UIButton+FlexSpace.m in Sources */,
 				180DFF3919D7F8CB004377F5 /* MBProgressHUD+Add.m in Sources */,
@@ -4916,6 +4943,7 @@
 				5C8E7FF21A37FD8D000BE1F6 /* GeoDetailViewController.m in Sources */,
 				180DFF1A19D7F8CB004377F5 /* ASIWebPageRequest.m in Sources */,
 				34BE19C819C1400F005B1BB2 /* Item_TalkColumn.m in Sources */,
+				5C792DE81A3EB4120090FE22 /* POIAnnotation.m in Sources */,
 				E7A7C2CD19EC041A00E652A4 /* Cover.m in Sources */,
 				184CDD931A1061E70048CA06 /* Cell_Show.m in Sources */,
 				180DFF2619D7F8CB004377F5 /* ASIS3Request.m in Sources */,

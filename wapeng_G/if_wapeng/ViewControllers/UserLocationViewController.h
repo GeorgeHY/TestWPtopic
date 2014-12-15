@@ -10,4 +10,6 @@
 
 @interface UserLocationViewController : BaseMapViewController
 
+@property (nonatomic,strong) NSMutableArray * dataSource;
+
 @end
